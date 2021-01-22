@@ -1,0 +1,129 @@
+openapi: 3.0.0
+info:
+  title: Modified Acapy Agent
+  version: v1
+  description: description
+  contact:
+    email: email@email.email
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+    
+servers:
+- url: http://localhost:8150/
+  description: test
+  
+paths: 
+  /verifiable-services/get-issue:
+    description: Query a verifiable service exchange issue list. Containing data about agent to agent exchange of service
+    post:
+      summary: Query a list of verifiable service exchange issues
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetIssueSchema"
+                
+      responses:
+        200:
+          description: OK
+         
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetIssueResponseSchema"
+  /pds/settings:
+    description: Query a verifiable service exchange issue list. Containing data about agent to agent exchange of service
+    post:
+      summary: Set the configuration of pds instances and/or create pds instances
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetSettingsSchema"
+                
+      responses:
+        200:
+          description: OK
+         
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SetSettingsSchemaResponse"
+
+components:
+  schemas:
+    GetIssueSchema:
+      required:
+        - connection_id
+        - service_id
+        - state
+      properties:
+        label:
+          type: string
+        connection_id:
+          type: string
+        author:
+          type: string
+        service_id:
+          type: string
+        exchange_id: 
+          type: string
+        state: 
+          type: string
+    GetIssueResponseSchema:
+      properties:
+        success: 
+          type: boolean
+        result:
+          type: array
+          items:
+            type: object
+    SetSettingsSchema:
+      properties:
+        client_id: 
+          type: string
+          default: "1321wrf1g3f1412rsrfer"
+        client_secret:
+          type: string
+          default: "12341551513qw42as"
+        optional_instance_name:
+          type: string
+          default: "default"
+        grant_type:
+          type: string
+          default: "client_credentials"
+    SetSettingsSchemaResponse:
+      properties:
+        success:
+          type: boolean
+        status:
+          type: object
+          properties:
+            pds_name_1:
+              type: string
+              default: "Invalid credentials"
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+              
