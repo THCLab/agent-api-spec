@@ -16,7 +16,10 @@ servers:
 paths: 
   /verifiable-services/issue:
     description: Query a verifiable service exchange issue list. Containing data about agent to agent exchange of service
+    
     get:
+      tags:
+        - "Verifiable Services"
       summary: Query a list of verifiable service exchange issues
       parameters:
         - $ref: "#/components/parameters/ServiceIssueFilter"
@@ -28,9 +31,68 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServiceIssueResponse"
+  /verifiable-services/issue{issue_id}:
+    description: Query a verifiable service by ID
+    
+    get:
+      tags:
+        - "Verifiable Services"
+      summary: Query a service issue by id
+      parameters:
+        - in: path
+          name: issue_id
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceIssueByIDResponse"
+  /verifiable-services/add:
+    description: a
+    
+    post:
+      tags:
+        - "Verifiable Services"
+      summary: Define a new service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceAdd"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceAddResponse"
+  /verifiable-services/apply:
+    description: a
+    post:
+      tags:
+        - "Verifiable Services"
+      summary: Define a new service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceApply"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceApplyResponse"
   /pds/settings:
     description: Set the configuration of multiple pds instances or one pds instance, if pds doesn't exists create pds instances
     post:
+      tags:
+        - "Personal Data Storage"
       summary: Set the configuration of pds instances and/or create pds instances
       requestBody:
         content:
@@ -47,6 +109,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/PDSSetSettingsResponse"
     get:
+      tags:
+          - "Personal Data Storage"
       summary: Query settings of all currently setup PDS
       responses:
         200:
@@ -60,6 +124,8 @@ paths:
   /pds/save:
     description: Save a record using active Personal Data Storage
     post:
+      tags:
+        - "Personal Data Storage"
       summary: Save a record using active PDS
       requestBody:
         content:
@@ -76,6 +142,8 @@ paths:
   /pds/activate:
     description: PDS Plugin is a state machine in which state is the PDS type. When you are saving something, you are saving to the active PDS.
     post:
+      tags:
+        - "Personal Data Storage"
       summary: Choose a PDS for all the saving operations
       parameters:
         - $ref: "#/components/parameters/PDSType"
@@ -90,6 +158,8 @@ paths:
   /pds/get/from:
     description: Ask other agent to share data he has in his PDS
     post:
+      tags:
+        - "Personal Data Storage"
       summary: Ask other agent to share data he has in his PDS
       parameters:
         - $ref: "#/components/parameters/PayloadID"
@@ -100,6 +170,8 @@ paths:
   /pds:
     description: a
     get:
+      tags:
+        - "Personal Data Storage"
       summary: Get all registered PDSes and current active PDS
       responses:
         200:
@@ -111,6 +183,8 @@ paths:
   /pds/{payload_id}:
     description: a
     get:
+      tags:
+        - "Personal Data Storage"
       parameters:
         - in: path
           name: payload_id
@@ -121,11 +195,17 @@ paths:
       responses:
         200:
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PDSPayloadResponse"
         404:
           description: Record not found
   /pds/current/:
     description: a
     get: 
+      tags:
+        - "Personal Data Storage"
       parameters:
         - in: query
           name: oca_schema_dris
@@ -133,6 +213,17 @@ paths:
             type: array
             items:
               type: string
+      responses:
+        200:
+          description: OK
+    post:
+      tags:
+        - "Personal Data Storage"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PDSPostCurrent"
       responses:
         200:
           description: OK
@@ -205,6 +296,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ServiceIssue"
+    ServiceIssueByIDResponse:
+      properties:
+        success: 
+          type: boolean
+        result:
+          $ref: "#/components/schemas/ServiceIssue"
     PDSSettingsExample:
       properties:
         client_id: 
@@ -256,12 +353,47 @@ components:
                     $ref: "#/components/schemas/OcaSchema"
                   pds_name:
                     $ref: "#/components/schemas/OcaSchema"
+    PDSPostCurrent:
+      properties:
+        data:
+          type: object
+          properties:
+            511f1t10iomj01tyf:
+              type: object
+            okm12-0goi2mj3oig:
+              type: object
     PDSPayloadResponse:
       properties:
         success:
           type: boolean
         result:
           type: string
+    ServiceAdd:
+      properties:
+        label:
+          type: string
+        service_schema:
+          $ref: "#/components/schemas/OcaSchema"
+        consent_id:
+          type: string
+    ServiceAddResponse:
+      properties:
+        success:
+          type: boolean
+        result:
+          type: object
+    ServiceApply:
+      properties:
+        user_data:
+          type: string
+        needs_a_check:
+          type: string
+    ServiceApplyResponse:
+      properties:
+        result:
+          type: object
+        success:
+          type: boolean
     OcaSchema:
       properties:
         oca_schema_namespace:
