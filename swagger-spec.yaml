@@ -14,33 +14,29 @@ servers:
   description: test
   
 paths: 
-  /verifiable-services/get-issue:
+  /verifiable-services/issue:
     description: Query a verifiable service exchange issue list. Containing data about agent to agent exchange of service
-    post:
+    get:
       summary: Query a list of verifiable service exchange issues
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/GetIssueSchema"
+      parameters:
+        - $ref: "#/components/parameters/ServiceIssueFilter"
                 
       responses:
         200:
           description: OK
-         
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetIssueResponseSchema"
+                $ref: "#/components/schemas/ServiceIssueResponse"
   /pds/settings:
-    description: aaa
+    description: Set the configuration of multiple pds instances or one pds instance, if pds doesn't exists create pds instances
     post:
       summary: Set the configuration of pds instances and/or create pds instances
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PDSPostSettingsSchema"
+              $ref: "#/components/schemas/PDSSettingsExample"
                 
       responses:
         200:
@@ -49,7 +45,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PDSPostSettingsSchemaResponse"
+                $ref: "#/components/schemas/PDSSetSettingsResponse"
     get:
       summary: Query settings of all currently setup PDS
       responses:
@@ -69,64 +65,147 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PDSSaveSchema"
+              $ref: "#/components/schemas/Payload"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PDSSaveResponseSchema"
+                $ref: "#/components/schemas/DRIResponse"
   /pds/activate:
     description: PDS Plugin is a state machine in which state is the PDS type. When you are saving something, you are saving to the active PDS.
     post:
       summary: Choose a PDS for all the saving operations
       parameters:
-        - in: query
-          name: type
-          schema: 
-            type: string
-        - in: query
-          name: optional_name
-          schema:
-            type: string
+        - $ref: "#/components/parameters/PDSType"
+        - $ref: "#/components/parameters/PDSInstanceName"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PDSSaveResponseSchema"
+                $ref: "#/components/schemas/DRIResponse"
+  /pds/get/from:
+    description: Ask other agent to share data he has in his PDS
+    post:
+      summary: Ask other agent to share data he has in his PDS
+      parameters:
+        - $ref: "#/components/parameters/PayloadID"
+        - $ref: "#/components/parameters/ConnectionID"
+      responses:
+        200:
+          description: OK
+  /pds:
+    description: a
+    get:
+      summary: Get all registered PDSes and current active PDS
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PDSResponse"
+  /pds/{payload_id}:
+    description: a
+    get:
+      parameters:
+        - in: path
+          name: payload_id
+          schema:
+            type: string
+          required: true
+          description: ID of data in PDS which you can retrieve
+      responses:
+        200:
+          description: OK
+        404:
+          description: Record not found
+  /pds/current/:
+    description: a
+    get: 
+      parameters:
+        - in: query
+          name: oca_schema_dris
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        200:
+          description: OK
+        
+      
 
 components:
+  parameters:
+    PDSType:
+      in: query
+      name: type
+      schema: 
+        type: string
+    PDSInstanceName:
+      in: query
+      name: optional_name
+      schema:
+        type: string
+    PayloadID:
+      in: query
+      name: payload_id
+      required: true
+      schema:
+        type: string
+    ConnectionID:
+      in: query
+      name: connection_id
+      required: true
+      schema:
+        type: string
+    ServiceIssueFilter:
+      in: query
+      name: filter
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              label:
+                type: string
+                default: "delete all fields you wont need in your query!"
+              connection_id:
+                type: string
+              author:
+                type: string
+              service_id:
+                type: string
+              exchange_id: 
+                type: string
+              state: 
+                type: string
   schemas:
-    GetIssueSchema:
-      required:
-        - connection_id
-        - service_id
-        - state
+    Failure:
       properties:
-        label:
+        success:
+          type: boolean
+          default: false
+        error_message: 
           type: string
-        connection_id:
-          type: string
-        author:
-          type: string
+          default: "Bad, bad, not good"
+    ServiceIssue:
+      properties:
         service_id:
           type: string
-        exchange_id: 
-          type: string
-        state: 
-          type: string
-    GetIssueResponseSchema:
+    ServiceIssueResponse:
       properties:
         success: 
           type: boolean
         result:
           type: array
           items:
-            type: object
-    PDSPostSettingsSchema:
+            $ref: "#/components/schemas/ServiceIssue"
+    PDSSettingsExample:
       properties:
         client_id: 
           type: string
@@ -140,48 +219,67 @@ components:
         grant_type:
           type: string
           default: "client_credentials"
-    PDSPostSettingsSchemaResponse:
+    PDSSetSettingsResponse:
+      type: object
       properties:
-        success:
+        success: 
           type: boolean
         result:
-          type: object
-          properties:
-            pds_name_1:
-              type: string
-              default: "Invalid credentials"
+          $ref: "#/components/schemas/PDSSettingsExample"
     PDSGetSettingsSchemaResponse:
       properties:
-        success:
+        success: 
           type: boolean
         result:
           type: object
           properties:
             pds_name_1:
-              type: object
-              properties:
-                client_id:
-                  type: string
-                  default: 123456789
-                client_secret:
-                  type: string
-                  default: 12345
-                scope:
-                  type: string
-                  default: "admin"
+              $ref: "#/components/schemas/PDSSettingsExample"
             pds_name_2:
               type: object
-    PDSSaveSchema:
+    PDSResponse:
+      properties:
+        success: 
+          type: boolean
+        result:
+          type: object
+          properties:
+            active: 
+              type: string
+              default: "local, default"
+            types:
+              type: array
+              items:
+                type: object
+                properties:
+                  local:
+                    $ref: "#/components/schemas/OcaSchema"
+                  pds_name:
+                    $ref: "#/components/schemas/OcaSchema"
+    PDSPayloadResponse:
+      properties:
+        success:
+          type: boolean
+        result:
+          type: string
+    OcaSchema:
+      properties:
+        oca_schema_namespace:
+          type: string
+          default: "pds"
+        oca_schema_dri:
+          type: string
+          default: "9bABtmHu628Ss4oHmyTU5gy7QB1VftngewTmh7wdmN1j"
+    Payload:
       properties:
         payload:
           type: string
-    PDSSaveResponseSchema:
+    DRIResponse:
       properties:
         dri:
           type: string
-        success:
+        success: 
           type: boolean
-          default: True
         
         
         
