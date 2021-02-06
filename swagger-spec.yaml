@@ -50,7 +50,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ServiceExchangeRecordByIDResponse"
+                $ref: "#/components/schemas/ServiceExchangeRecord"
   /vs/add:
     description: a
     
@@ -399,8 +399,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ServiceExchangeRecord"
-    ServiceExchangeRecordByIDResponse:
-      $ref: "#/components/schemas/ServiceExchangeRecord"
     PDSSettingsExample:
       properties:
         client_id: 
@@ -511,10 +509,14 @@ components:
           type: string
           default: "9bABtmHu628Ss4oHmyTU5gy7QB1VftngewTmh7wdmN1j"
     Payload:
+      required:
+        - payload
       properties:
         payload:
           type: string
     DRIResponse:
+      required:
+        - dri
       properties:
         dri:
           type: string
