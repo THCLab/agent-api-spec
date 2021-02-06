@@ -13,13 +13,30 @@ path_to_script = os.path.realpath(__file__)
 path = os.path.split(path_to_script) 
 path_to_spec = path[0] + "/swagger-spec.yaml"
 completed = subprocess.run(["swagger-marshmallow-codegen", path_to_spec], capture_output=True)
+
+# Format
 generated_output = completed.stdout.decode("utf-8")
-generated_output = generated_output.replace("from __future__ import annotations\n", "")
+index = generated_output.find("class")
+generated_output = generated_output[index:]
+generated_output = generated_output.replace("    class Meta:\n        unknown = INCLUDE", "")
+generated_output = generated_output.replace("(Schema)", "(OpenAPISchema)")
+
 
 generated_filename = "generated_models.py"
 if len(sys.argv) > 1:
     generated_filename = sys.argv[1] + generated_filename    
 
 f = open(generated_filename, "w")
+f.write( \
+"""\"\"\"This file is auto generated\"\"\"
+from marshmallow import ( Schema, fields, EXCLUDE )
+
+class OpenAPISchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
+
+    
+""")
 f.write(generated_output)
+
 f.close()
