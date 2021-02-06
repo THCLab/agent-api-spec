@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+This script invokes swagger-marshmallow-codegen program on nearby swagger-spec.yaml.
+Modifies the output a bit and pipes it into directory specified by the first argument to the program.
+In the end it creates a "generated_models.py" file.
+"""
+
 import os
 import subprocess
 import sys
@@ -10,7 +16,7 @@ completed = subprocess.run(["swagger-marshmallow-codegen", path_to_spec], captur
 generated_output = completed.stdout.decode("utf-8")
 generated_output = generated_output.replace("from __future__ import annotations\n", "")
 
-generated_filename = "generated.py"
+generated_filename = "generated_models.py"
 if len(sys.argv) > 1:
     generated_filename = sys.argv[1] + generated_filename    
 

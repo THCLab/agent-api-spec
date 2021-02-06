@@ -14,7 +14,7 @@ servers:
   description: test
   
 paths: 
-  /verifiable-services/issue:
+  /vs/issue:
     description: Query a verifiable service exchange issue list. Containing data about agent to agent exchange of service
     
     get:
@@ -31,7 +31,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServiceIssueResponse"
-  /verifiable-services/issue{issue_id}:
+  /vs/issue{issue_id}:
     description: Query a verifiable service by ID
     
     get:
@@ -51,7 +51,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServiceIssueByIDResponse"
-  /verifiable-services/add:
+  /vs/add:
     description: a
     
     post:
@@ -69,8 +69,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ServiceAddResponse"
-  /verifiable-services/apply:
+                $ref: "#/components/schemas/ServiceIssue"
+  /vs/apply:
     description: a
     post:
       tags:
@@ -87,7 +87,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ServiceApplyResponse"
+                $ref: "#/components/schemas/ServiceIssue"
+  /vs/process-application:
+    post:
+      tags:
+        - "Verifiable Services"
+      summary: Decide whether to reject or accept an incoming service application
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProcessApplication"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceIssue"
+      
   /pds/settings:
     description: Set the configuration of multiple pds instances or one pds instance, if pds doesn't exists create pds instances
     post:
@@ -107,7 +125,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PDSSetSettingsResponse"
+                $ref: "#/components/schemas/PDSSettingsExample"
     get:
       tags:
           - "Personal Data Storage"
@@ -191,14 +209,14 @@ paths:
           schema:
             type: string
           required: true
-          description: ID of data in PDS which you can retrieve
+          description: ID of data in PDS
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PDSPayloadResponse"
+                $ref: "#/components/schemas/Payload"
         404:
           description: Record not found
   /pds/current/:
@@ -227,7 +245,100 @@ paths:
       responses:
         200:
           description: OK
-        
+  /vs/consent/:
+    post:
+      tags:
+        - "Verifiable Services"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DefineConsent"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Consent"
+    get:
+      tags:
+        - "Verifiable Services"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Consent"
+  /vs/consent-given/:
+    get:
+      tags:
+        - "Verifiable Services"
+      parameters:
+        - in: query
+          name: connection_id
+          schema: 
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Consent"
+  /vs/request-service-list/{connection_id}:
+    get:
+      tags:
+        - "Verifiable Services"
+      parameters:
+        - in: path
+          name: connection_id
+          required: True
+          schema: 
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestServiceList"
+  /vs/services:
+    get:
+      tags:
+        - "Verifiable Services"
+      parameters:
+        - in: query
+          name: connection_id
+          description: leave blank if you want to see your services
+          schema: 
+            type: string
+        - in: query
+          name: service_id
+          description: query a single, specific record
+          schema: 
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Service"
+                      
       
 
 components:
@@ -276,32 +387,20 @@ components:
               state: 
                 type: string
   schemas:
-    Failure:
-      properties:
-        success:
-          type: boolean
-          default: false
-        error_message: 
-          type: string
-          default: "Bad, bad, not good"
     ServiceIssue:
       properties:
+        label:
+          type: string
         service_id:
           type: string
     ServiceIssueResponse:
       properties:
-        success: 
-          type: boolean
         result:
           type: array
           items:
             $ref: "#/components/schemas/ServiceIssue"
     ServiceIssueByIDResponse:
-      properties:
-        success: 
-          type: boolean
-        result:
-          $ref: "#/components/schemas/ServiceIssue"
+      $ref: "#/components/schemas/ServiceIssue"
     PDSSettingsExample:
       properties:
         client_id: 
@@ -316,43 +415,26 @@ components:
         grant_type:
           type: string
           default: "client_credentials"
-    PDSSetSettingsResponse:
-      type: object
-      properties:
-        success: 
-          type: boolean
-        result:
-          $ref: "#/components/schemas/PDSSettingsExample"
     PDSGetSettingsSchemaResponse:
       properties:
-        success: 
-          type: boolean
-        result:
+        pds_name_1:
+          $ref: "#/components/schemas/PDSSettingsExample"
+        pds_name_2:
           type: object
-          properties:
-            pds_name_1:
-              $ref: "#/components/schemas/PDSSettingsExample"
-            pds_name_2:
-              type: object
     PDSResponse:
       properties:
-        success: 
-          type: boolean
-        result:
-          type: object
-          properties:
-            active: 
-              type: string
-              default: "local, default"
-            types:
-              type: array
-              items:
-                type: object
-                properties:
-                  local:
-                    $ref: "#/components/schemas/OcaSchema"
-                  pds_name:
-                    $ref: "#/components/schemas/OcaSchema"
+        active_pds: 
+          type: string
+          default: "local, default"
+        types:
+          type: array
+          items:
+            type: object
+            properties:
+              local:
+                $ref: "#/components/schemas/OcaSchema"
+              pds_name:
+                $ref: "#/components/schemas/OcaSchema"
     PDSPostCurrent:
       properties:
         data:
@@ -362,12 +444,6 @@ components:
               type: object
             okm12-0goi2mj3oig:
               type: object
-    PDSPayloadResponse:
-      properties:
-        success:
-          type: boolean
-        result:
-          type: string
     ServiceAdd:
       properties:
         label:
@@ -376,24 +452,56 @@ components:
           $ref: "#/components/schemas/OcaSchema"
         consent_id:
           type: string
-    ServiceAddResponse:
-      properties:
-        success:
-          type: boolean
-        result:
-          type: object
     ServiceApply:
       properties:
         user_data:
           type: string
-        needs_a_check:
+        connection_id:
           type: string
-    ServiceApplyResponse:
+        service_id:
+          type: string
+    DefineConsent:
+      allOf:
+        - $ref: "#/components/schemas/OCAData"
+        - type: object
+          properties:
+            label: 
+              type: string
+    Consent:
+      allOf:
+        - $ref: "#/components/schemas/DefineConsent"
+        - type: object
+          properties:
+            consent_id: 
+              type: string      
+      
+    ProcessApplication:
+      properties:
+        issue_id:
+          type: string
+        decision:
+          type: string
+    Service:
+      properties:
+        service_id:
+          type: string
+        lable:
+          type: string
+    RequestServiceList:
       properties:
         result:
+          type: string
+          default: "request sent, expect webhook notification"
+    OCAData:
+      properties:
+        oca_schema_namespace:
+          type: string
+          default: "pds"
+        oca_schema_dri:
+          type: string
+          default: "9bABtmHu628Ss4oHmyTU5gy7QB1VftngewTmh7wdmN1j"
+        oca_data:
           type: object
-        success:
-          type: boolean
     OcaSchema:
       properties:
         oca_schema_namespace:
@@ -410,8 +518,6 @@ components:
       properties:
         dri:
           type: string
-        success: 
-          type: boolean
         
         
         
