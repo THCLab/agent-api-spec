@@ -14,15 +14,15 @@ servers:
   description: test
   
 paths: 
-  /vs/issue:
-    description: Query a verifiable service exchange issue list. Containing data about agent to agent exchange of service
+  /vs/exchange:
+    description: Query a verifiable service ExchangeRecord list. Containing data about agent to agent exchange of service
     
     get:
       tags:
         - "Verifiable Services"
-      summary: Query a list of verifiable service exchange issues
+      summary: Query a list of verifiable service exchange records
       parameters:
-        - $ref: "#/components/parameters/ServiceIssueFilter"
+        - $ref: "#/components/parameters/ServiceExchangeRecordFilter"
                 
       responses:
         200:
@@ -30,17 +30,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ServiceIssueResponse"
-  /vs/issue{issue_id}:
+                $ref: "#/components/schemas/ServiceExchangeRecordResponse"
+  /vs/exchange/{record_id}:
     description: Query a verifiable service by ID
     
     get:
       tags:
         - "Verifiable Services"
-      summary: Query a service issue by id
+      summary: Query a service exchange record by id
       parameters:
         - in: path
-          name: issue_id
+          name: record_id
           schema:
             type: string
           required: true
@@ -50,7 +50,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ServiceIssueByIDResponse"
+                $ref: "#/components/schemas/ServiceExchangeRecordByIDResponse"
   /vs/add:
     description: a
     
@@ -69,7 +69,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ServiceIssue"
+                $ref: "#/components/schemas/ServiceExchangeRecord"
   /vs/apply:
     description: a
     post:
@@ -87,7 +87,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ServiceIssue"
+                $ref: "#/components/schemas/ServiceExchangeRecord"
   /vs/process-application:
     post:
       tags:
@@ -104,7 +104,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ServiceIssue"
+                $ref: "#/components/schemas/ServiceExchangeRecord"
       
   /pds/settings:
     description: Set the configuration of multiple pds instances or one pds instance, if pds doesn't exists create pds instances
@@ -365,7 +365,7 @@ components:
       required: true
       schema:
         type: string
-    ServiceIssueFilter:
+    ServiceExchangeRecordFilter:
       in: query
       name: filter
       content:
@@ -387,20 +387,20 @@ components:
               state: 
                 type: string
   schemas:
-    ServiceIssue:
+    ServiceExchangeRecord:
       properties:
         label:
           type: string
         service_id:
           type: string
-    ServiceIssueResponse:
+    ServiceExchangeRecordResponse:
       properties:
         result:
           type: array
           items:
-            $ref: "#/components/schemas/ServiceIssue"
-    ServiceIssueByIDResponse:
-      $ref: "#/components/schemas/ServiceIssue"
+            $ref: "#/components/schemas/ServiceExchangeRecord"
+    ServiceExchangeRecordByIDResponse:
+      $ref: "#/components/schemas/ServiceExchangeRecord"
     PDSSettingsExample:
       properties:
         client_id: 
@@ -477,7 +477,7 @@ components:
       
     ProcessApplication:
       properties:
-        issue_id:
+        exchange_record_id:
           type: string
         decision:
           type: string
