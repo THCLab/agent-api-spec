@@ -214,7 +214,7 @@ paths:
                 $ref: "#/components/schemas/Payload"
         404:
           description: Record not found
-  /pds/current/:
+  /pds/current:
     description: a
     get: 
       tags:
@@ -240,7 +240,7 @@ paths:
       responses:
         200:
           description: OK
-  /vs/consent/:
+  /vs/consent:
     post:
       tags:
         - "Verifiable Services"
@@ -270,7 +270,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Consent"
-  /vs/consent-given/:
+  /vs/consent-given:
     get:
       tags:
         - "Verifiable Services"
@@ -419,6 +419,10 @@ components:
           $ref: "#/components/schemas/PDSSettingsExample"
         pds_name_2:
           type: object
+          properties:
+            optional_instance_name: 
+              type: string
+              default: "default"
     PDSResponse:
       required:
         - active_pds
@@ -443,10 +447,36 @@ components:
         data:
           type: object
           properties:
-            511f1t10iomj01tyf:
+            DRI:511f1t10iomj01tyf:
               type: object
-            okm12-0goi2mj3oig:
+              properties:
+                t:
+                  type: string
+                  default: o
+                p:
+                  type: object
+                  properties:
+                    second_dri: 
+                      type: string
+                      default: DRI:125151
+                    test_value:
+                      type: string
+                      default: test_test
+            DRI:okm12-0goi2mj3oig:
               type: object
+              properties:
+                t:
+                  type: string
+                  default: o
+                p:
+                  type: object
+                  properties:
+                    second_dri: 
+                      type: string
+                      default: DRI:125151
+                    test_value:
+                      type: string
+                      default: test_test
     ServiceAdd:
       required:
         - label
