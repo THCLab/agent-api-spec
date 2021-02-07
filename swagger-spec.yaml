@@ -388,12 +388,17 @@ components:
                 type: string
   schemas:
     ServiceExchangeRecord:
+      required:
+        - label
+        - service_id
       properties:
         label:
           type: string
         service_id:
           type: string
     ServiceExchangeRecordResponse:
+      required:
+        - result
       properties:
         result:
           type: array
@@ -420,6 +425,9 @@ components:
         pds_name_2:
           type: object
     PDSResponse:
+      required:
+        - active_pds
+        - types
       properties:
         active_pds: 
           type: string
@@ -430,10 +438,12 @@ components:
             type: object
             properties:
               local:
-                $ref: "#/components/schemas/OcaSchema"
+                $ref: "#/components/schemas/OCASchema"
               pds_name:
-                $ref: "#/components/schemas/OcaSchema"
+                $ref: "#/components/schemas/OCASchema"
     PDSPostCurrent:
+      required: 
+        - data
       properties:
         data:
           type: object
@@ -443,14 +453,22 @@ components:
             okm12-0goi2mj3oig:
               type: object
     ServiceAdd:
+      required:
+        - label
+        - service_schema
+        - consent_id
       properties:
         label:
           type: string
         service_schema:
-          $ref: "#/components/schemas/OcaSchema"
+          $ref: "#/components/schemas/OCASchema"
         consent_id:
           type: string
     ServiceApply:
+      required:
+        - user_data
+        - connection_id
+        - service_id
       properties:
         user_data:
           type: string
@@ -462,6 +480,8 @@ components:
       allOf:
         - $ref: "#/components/schemas/OCAData"
         - type: object
+          required:
+            - label
           properties:
             label: 
               type: string
@@ -469,28 +489,42 @@ components:
       allOf:
         - $ref: "#/components/schemas/DefineConsent"
         - type: object
+          required:
+            - consent_id
           properties:
             consent_id: 
               type: string      
       
     ProcessApplication:
+      required:
+        - exchange_record_id
+        - decision
       properties:
         exchange_record_id:
           type: string
         decision:
           type: string
     Service:
+      required:
+        - service_id
+        - label
       properties:
         service_id:
           type: string
-        lable:
+        label:
           type: string
     RequestServiceList:
+      required:
+        - result
       properties:
         result:
           type: string
           default: "request sent, expect webhook notification"
     OCAData:
+      required:
+        - oca_schema_namespace
+        - oca_schema_dri
+        - oca_data
       properties:
         oca_schema_namespace:
           type: string
@@ -500,7 +534,10 @@ components:
           default: "9bABtmHu628Ss4oHmyTU5gy7QB1VftngewTmh7wdmN1j"
         oca_data:
           type: object
-    OcaSchema:
+    OCASchema:
+      required:
+        - oca_schema_namespace
+        - oca_schema_dri
       properties:
         oca_schema_namespace:
           type: string
