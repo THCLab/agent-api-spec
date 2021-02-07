@@ -116,16 +116,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PDSSettingsExample"
+              $ref: "#/components/schemas/PDSSettingsMultiple"
                 
       responses:
         200:
           description: OK
-         
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PDSSettingsExample"
+                $ref: "#/components/schemas/PDSSettingsMultiple"
     get:
       tags:
           - "Personal Data Storage"
@@ -136,7 +135,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PDSGetSettingsSchemaResponse"
+                $ref: "#/components/schemas/PDSSettingsMultiple"
       
       
   /pds/save:
@@ -169,11 +168,7 @@ paths:
       responses:
         200:
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DRIResponse"
-  /pds/get/from:
+  /pds/from:
     description: Ask other agent to share data he has in his PDS
     post:
       tags:
@@ -418,7 +413,7 @@ components:
         grant_type:
           type: string
           default: "client_credentials"
-    PDSGetSettingsSchemaResponse:
+    PDSSettingsMultiple:
       properties:
         pds_name_1:
           $ref: "#/components/schemas/PDSSettingsExample"
@@ -557,27 +552,3 @@ components:
       properties:
         dri:
           type: string
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-              
