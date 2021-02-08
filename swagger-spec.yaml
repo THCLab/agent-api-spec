@@ -52,8 +52,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ServiceExchangeRecord"
   /vs/add:
-    description: a
-    
     post:
       tags:
         - "Verifiable Services"
@@ -71,11 +69,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/ServiceExchangeRecord"
   /vs/apply:
-    description: a
     post:
       tags:
         - "Verifiable Services"
-      summary: Define a new service
+      summary: Apply to other agent's service
       requestBody:
         content:
           application/json:
@@ -128,7 +125,7 @@ paths:
     get:
       tags:
           - "Personal Data Storage"
-      summary: Query settings of all currently setup PDS
+      summary: Query settings of all currently setup PDSes
       responses:
         200:
           description: OK
@@ -181,7 +178,7 @@ paths:
         200:
           description: OK
   /pds:
-    description: a
+    description: TODO
     get:
       tags:
         - "Personal Data Storage"
@@ -196,6 +193,7 @@ paths:
   /pds/{payload_id}:
     description: a
     get:
+      summary: Read a PDS record
       tags:
         - "Personal Data Storage"
       parameters:
@@ -215,8 +213,9 @@ paths:
         404:
           description: Record not found
   /pds/current:
-    description: a
+    description: TODO
     get: 
+      summary: Retrieve data in bulk 
       tags:
         - "Personal Data Storage"
       parameters:
@@ -230,6 +229,7 @@ paths:
         200:
           description: OK
     post:
+      summary: Post data in bulk
       tags:
         - "Personal Data Storage"
       requestBody:
@@ -242,6 +242,7 @@ paths:
           description: OK
   /vs/consent:
     post:
+      summary: Define a new consent
       tags:
         - "Verifiable Services"
       requestBody:
@@ -257,6 +258,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Consent"
     get:
+      summary: Retrieve all defined consents
       tags:
         - "Verifiable Services"
       responses:
@@ -272,6 +274,7 @@ paths:
                       $ref: "#/components/schemas/Consent"
   /vs/consent-given:
     get:
+      summary: Retrieve all consents givent to other agent's
       tags:
         - "Verifiable Services"
       parameters:
@@ -292,6 +295,7 @@ paths:
                       $ref: "#/components/schemas/Consent"
   /vs/request-service-list/{connection_id}:
     get:
+      summary: Request a service list from other agent
       tags:
         - "Verifiable Services"
       parameters:
@@ -309,6 +313,7 @@ paths:
                 $ref: "#/components/schemas/RequestServiceList"
   /vs/services:
     get:
+      summary: Retrieve all defined services
       tags:
         - "Verifiable Services"
       parameters:
