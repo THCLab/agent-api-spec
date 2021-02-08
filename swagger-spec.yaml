@@ -248,7 +248,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DefineConsent"
+              $ref: "#/components/schemas/Consent"
       responses:
         200:
           description: OK
@@ -387,10 +387,33 @@ components:
         - label
         - service_id
       properties:
+        exchange_id:
+          type: string
+        service_user_data_dri:
+          type: string
+        author:
+          type: string
+          default: "self"
+        updated_at:
+          type: string
+        created_at:
+          type: string
+        connection_id:
+          type: string
+        state:
+          type: string
+          default: "pending"
         label:
           type: string
         service_id:
           type: string
+        service_user_data:
+          type: string
+          default: "user_data"
+        consent:
+          $ref: "#/components/schemas/ConsentSerialized"
+        service:
+          $ref: "#/components/schemas/OCAData"
     ServiceExchangeRecordResponse:
       required:
         - result
@@ -432,14 +455,12 @@ components:
           type: string
           default: "local, default"
         types:
-          type: array
-          items:
-            type: object
-            properties:
-              local:
-                $ref: "#/components/schemas/OCASchema"
-              pds_name:
-                $ref: "#/components/schemas/OCASchema"
+          type: object
+          properties:
+            local:
+              $ref: "#/components/schemas/OCASchema"
+            pds_name:
+              $ref: "#/components/schemas/OCASchema"
     PDSPostCurrent:
       required: 
         - data
@@ -501,25 +522,25 @@ components:
           type: string
         service_id:
           type: string
-    DefineConsent:
+    ConsentSerialized:
+      allOf:
+        - $ref: "#/components/schemas/OCADataSerialized"
+        - type: object
+          properties:
+            usage_policy:
+              type: string
+    Consent:
       allOf:
         - $ref: "#/components/schemas/OCAData"
         - type: object
           required:
             - label
+            - consent_id
           properties:
             label: 
               type: string
-    Consent:
-      allOf:
-        - $ref: "#/components/schemas/DefineConsent"
-        - type: object
-          required:
-            - consent_id
-          properties:
             consent_id: 
-              type: string      
-      
+              type: string
     ProcessApplication:
       required:
         - exchange_record_id
@@ -536,8 +557,21 @@ components:
       properties:
         service_id:
           type: string
+          default: "1212m1pkngm309o"
         label:
           type: string
+          default: "test_name"
+        updated_at:
+          type: string
+          default: "2021-02-08 13:17:08.190712Z"
+        created_at: 
+          type: string
+          default: "2021-02-08 13:17:08.190712Z"
+        service_schema:
+          $ref: "#/components/schemas/OCASchema"
+        consent_schema:
+          $ref: "#/components/schemas/ConsentSerialized"
+        
     RequestServiceList:
       required:
         - result
@@ -546,19 +580,27 @@ components:
           type: string
           default: "request sent, expect webhook notification"
     OCAData:
-      required:
-        - oca_schema_namespace
-        - oca_schema_dri
-        - oca_data
-      properties:
-        oca_schema_namespace:
-          type: string
-          default: "pds"
-        oca_schema_dri:
-          type: string
-          default: "9bABtmHu628Ss4oHmyTU5gy7QB1VftngewTmh7wdmN1j"
-        oca_data:
-          type: object
+      allOf:
+        - $ref: "#/components/schemas/OCASchema"
+        - type: object
+          required:
+            - oca_data_dri
+          properties:
+            oca_data_dri: 
+              type: string
+              default: "9bABtmHu628Ss4oHmyTU5gy7QB1VftngewTmh7wdmN1j"
+    OCADataSerialized:
+      allOf:
+        - $ref: "#/components/schemas/OCAData"
+        - type: object
+          required:
+            - oca_data
+          properties:
+            oca_data: 
+              type: object
+              properties:
+                test:
+                  type: string
     OCASchema:
       required:
         - oca_schema_namespace
