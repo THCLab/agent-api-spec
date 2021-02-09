@@ -113,7 +113,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PDSSettingsMultiple"
+              $ref: "#/components/schemas/ArrayOfPDSSettings"
                 
       responses:
         200:
@@ -121,7 +121,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PDSSettingsMultiple"
+                $ref: "#/components/schemas/ArrayOfPDSSettings"
     get:
       tags:
           - "Personal Data Storage"
@@ -132,53 +132,35 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PDSSettingsMultiple"
-      
-      
-  /pds/save:
-    description: Save a record using active Personal Data Storage
-    post:
-      tags:
-        - "Personal Data Storage"
-      summary: Save a record using active PDS
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Payload"
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DRIResponse"
+                $ref: "#/components/schemas/ArrayOfPDSSettings"
   /pds/activate:
     description: PDS Plugin is a state machine in which state is the PDS type. When you are saving something, you are saving to the active PDS.
     post:
       tags:
         - "Personal Data Storage"
       summary: Choose a PDS for all the saving operations
-      parameters:
-        - $ref: "#/components/parameters/PDSType"
-        - $ref: "#/components/parameters/PDSInstanceName"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PDSActivate"
       responses:
         200:
           description: OK
-  /pds/from:
-    description: Ask other agent to share data he has in his PDS
-    post:
-      tags:
-        - "Personal Data Storage"
-      summary: Ask other agent to share data he has in his PDS
-      parameters:
-        - $ref: "#/components/parameters/PayloadID"
-        - $ref: "#/components/parameters/ConnectionID"
-      responses:
-        200:
-          description: OK
+  # /pds/from:
+  #   description: Ask other agent to share data he has in his PDS
+  #   post:
+  #     tags:
+  #       - "Personal Data Storage"
+  #     summary: Ask other agent to share data he has in his PDS
+  #     parameters:
+  #       - $ref: "#/components/parameters/PayloadID"
+  #       - $ref: "#/components/parameters/ConnectionID"
+  #     responses:
+  #       200:
+  #         description: OK
   /pds:
-    description: TODO
+    description: Get all registered PDSes and current active PDS
     get:
       tags:
         - "Personal Data Storage"
@@ -190,30 +172,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PDSResponse"
-  /pds/{payload_id}:
-    description: a
-    get:
-      summary: Read a PDS record
-      tags:
-        - "Personal Data Storage"
-      parameters:
-        - in: path
-          name: payload_id
-          schema:
-            type: string
-          required: true
-          description: ID of data in PDS
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Payload"
-        404:
-          description: Record not found
-  /pds/current:
-    description: TODO
+  /pds/oca-schema-chunks:
+    description: Retrieve data in bulk 
     get: 
       summary: Retrieve data in bulk 
       tags:
@@ -236,7 +196,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PDSPostCurrent"
+              $ref: "#/components/schemas/PDSPostChunks"
       responses:
         200:
           description: OK
@@ -343,9 +303,9 @@ paths:
 
 components:
   parameters:
-    PDSType:
+    PDSDriver:
       in: query
-      name: type
+      name: driver
       schema: 
         type: string
     PDSInstanceName:
@@ -375,7 +335,6 @@ components:
             properties:
               label:
                 type: string
-                default: "delete all fields you wont need in your query!"
               connection_id:
                 type: string
               author:
@@ -387,6 +346,16 @@ components:
               state: 
                 type: string
   schemas:
+    PDSActivate:
+      required:
+        - instance_name
+        - driver
+      properties:
+        instance_name:
+          type: string
+        driver: 
+          type: string
+          enum: [own_your_data, local, thcf_data_vault]
     ServiceExchangeRecord:
       required:
         - label
@@ -398,7 +367,6 @@ components:
           type: string
         author:
           type: string
-          default: "self"
         updated_at:
           type: string
         created_at:
@@ -407,14 +375,12 @@ components:
           type: string
         state:
           type: string
-          default: "pending"
         label:
           type: string
         service_id:
           type: string
         service_user_data:
           type: string
-          default: "user_data"
         consent:
           $ref: "#/components/schemas/ConsentSerialized"
         service:
@@ -427,82 +393,93 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ServiceExchangeRecord"
-    PDSSettingsExample:
+    PDSSetting:
+      required:
+        - driver
+        - client_id
+        - client_secret
       properties:
+        driver:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              enum: [own_your_data, thcf_data_vault, local]
+            thcf_data_vault:
+              type: object
+              required:
+                - host
+              properties:
+                host:
+                  type: string
+                  description: Server URL
+            own_your_data:
+              type: object
+              required:
+                - scope
+                - grant_type
+              properties:
+                scope:
+                  type: string
+                  enum: [admin, write, read]
+                grant_type:
+                  type: string
+                  enum: [client_credentials]
         client_id: 
           type: string
-          default: "1321wrf1g3f1412rsrfer"
         client_secret:
           type: string
-          default: "12341551513qw42as"
-        optional_instance_name:
+        instance_name:
           type: string
-          default: "default"
-        grant_type:
-          type: string
-          default: "client_credentials"
-    PDSSettingsMultiple:
-      properties:
-        pds_name_1:
-          $ref: "#/components/schemas/PDSSettingsExample"
-        pds_name_2:
-          type: object
-          properties:
-            optional_instance_name: 
-              type: string
-              default: "default"
+        
+    ArrayOfPDSSettings:
+      type: array
+      items:
+        $ref: "#/components/schemas/PDSSetting"
     PDSResponse:
       required:
-        - active_pds
-        - types
+        - active
+        - drivers
       properties:
-        active_pds: 
+        active: 
           type: string
-          default: "local, default"
-        types:
-          type: object
-          properties:
-            local:
-              $ref: "#/components/schemas/OCASchema"
-            pds_name:
-              $ref: "#/components/schemas/OCASchema"
-    PDSPostCurrent:
+        drivers:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              oca_schema_dri:
+                type: string
+    PDSPostChunks:
       required: 
         - data
       properties:
         data:
           type: object
-          properties:
-            DRI:511f1t10iomj01tyf:
-              type: object
-              properties:
-                t:
-                  type: string
-                  default: o
-                p:
-                  type: object
-                  properties:
-                    second_dri: 
-                      type: string
-                      default: DRI:125151
-                    test_value:
-                      type: string
-                      default: test_test
-            DRI:okm12-0goi2mj3oig:
-              type: object
-              properties:
-                t:
-                  type: string
-                  default: o
-                p:
-                  type: object
-                  properties:
-                    second_dri: 
-                      type: string
-                      default: DRI:125151
-                    test_value:
-                      type: string
-                      default: test_test
+          additionalProperties:
+            type: object
+            required:
+              - t
+              - p 
+            properties:
+              t:
+                type: string
+              p:
+                additionalProperties: true
+          example:
+            "DRI:12152515": 
+              t: o
+              p:
+                test: example
+            "DRI:1asfaf2152515": 
+              t: a
+              p: 
+                - test: example
+                  
     ServiceAdd:
       required:
         - label
@@ -562,16 +539,12 @@ components:
       properties:
         service_id:
           type: string
-          default: "1212m1pkngm309o"
         label:
           type: string
-          default: "test_name"
         updated_at:
           type: string
-          default: "2021-02-08 13:17:08.190712Z"
         created_at: 
           type: string
-          default: "2021-02-08 13:17:08.190712Z"
         service_schema:
           $ref: "#/components/schemas/OCASchema"
         consent_schema:
@@ -583,7 +556,6 @@ components:
       properties:
         result:
           type: string
-          default: "request sent, expect webhook notification"
     OCAData:
       allOf:
         - $ref: "#/components/schemas/OCASchema"
@@ -593,7 +565,6 @@ components:
           properties:
             oca_data_dri: 
               type: string
-              default: "9bABtmHu628Ss4oHmyTU5gy7QB1VftngewTmh7wdmN1j"
     OCADataSerialized:
       allOf:
         - $ref: "#/components/schemas/OCAData"
@@ -613,10 +584,8 @@ components:
       properties:
         oca_schema_namespace:
           type: string
-          default: "pds"
         oca_schema_dri:
           type: string
-          default: "9bABtmHu628Ss4oHmyTU5gy7QB1VftngewTmh7wdmN1j"
     Payload:
       required:
         - payload
