@@ -147,19 +147,17 @@ paths:
       responses:
         200:
           description: OK
-  # /pds/from:
-  #   description: Ask other agent to share data he has in his PDS
-  #   post:
-  #     tags:
-  #       - "Personal Data Storage"
-  #     summary: Ask other agent to share data he has in his PDS
-  #     parameters:
-  #       - $ref: "#/components/parameters/PayloadID"
-  #       - $ref: "#/components/parameters/ConnectionID"
-  #     responses:
-  #       200:
-  #         description: OK
-  /pds:
+  /pds/active:
+    description: Gets currently active driver instance.
+    get:
+      responses:
+        200:
+          description: Returns active driver instance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PDSDriverInstance"
+  /pds/drivers:
     description: Get all registered PDSes and current active PDS
     get:
       tags:
@@ -171,7 +169,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PDSResponse"
+                $ref: "#/components/schemas/ArrayOfPDSDrivers"
   /pds/oca-schema-chunks:
     description: Retrieve data in bulk 
     get: 
@@ -188,6 +186,10 @@ paths:
       responses:
         200:
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfOCASchemaChunks"
     post:
       summary: Post data in bulk
       tags:
@@ -196,7 +198,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PDSPostChunks"
+              $ref: "#/components/schemas/ArrayOfOCASchemaChunks"
       responses:
         200:
           description: OK
@@ -303,28 +305,6 @@ paths:
 
 components:
   parameters:
-    PDSDriver:
-      in: query
-      name: driver
-      schema: 
-        type: string
-    PDSInstanceName:
-      in: query
-      name: optional_name
-      schema:
-        type: string
-    PayloadID:
-      in: query
-      name: payload_id
-      required: true
-      schema:
-        type: string
-    ConnectionID:
-      in: query
-      name: connection_id
-      required: true
-      schema:
-        type: string
     ServiceExchangeRecordFilter:
       in: query
       name: filter
@@ -438,48 +418,42 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/PDSSetting"
-    PDSResponse:
-      required:
-        - active
-        - drivers
+    ArrayOfPDSDrivers:
+      type: array
+      items:
+        $ref: "#/components/schemas/PDSDriver"
+    PDSDriver:
+      type: "object"
       properties:
-        active: 
+        name:
           type: string
-        drivers:
+          enum: [own_your_data, thcf_data_vault, local]
+        oca_schema_dri:
+          type: string
+    PDSDriverInstance:
+      type: "object"
+      properties:
+        instance_name: 
+          type: string
+        driver:
+          $ref: "#/components/schemas/PDSDriver"
+    ArrayOfOCASchemaChunks:
+      type: array
+      items:
+        $ref: "#/components/schemas/OCASchemaChunk"
+    OCASchemaChunk:
+      required: 
+        - dri
+        - payload
+      properties:
+        dri:
+          type: string
+        payload:
           type: array
           items:
             type: object
-            properties:
-              name:
-                type: string
-              oca_schema_dri:
-                type: string
-    PDSPostChunks:
-      required: 
-        - data
-      properties:
-        data:
-          type: object
-          additionalProperties:
-            type: object
-            required:
-              - t
-              - p 
-            properties:
-              t:
-                type: string
-              p:
-                additionalProperties: true
-          example:
-            "DRI:12152515": 
-              t: o
-              p:
-                test: example
-            "DRI:1asfaf2152515": 
-              t: a
-              p: 
-                - test: example
-                  
+            additionalProperties:
+              type: string
     ServiceAdd:
       required:
         - label
