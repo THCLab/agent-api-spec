@@ -14,15 +14,75 @@ servers:
   description: test
   
 paths: 
-  /vs/exchange:
+  /applications/mine:
+    get:
+      tags:
+        - "Service applications that the user applied"
+      summary: Queries for all pending applications
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfApplications"
+  /applications/others:
+    get:
+      tags:
+        - "Service applications that others applied"
+      summary: Queries for all pending applications
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfApplications"
+  /applications/{appliance_uuid}/accept:
+    put:
+      tags:
+        - "Service applications"
+      parameters:
+        - in: path
+          name: appliance_uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+  /applications/{appliance_uuid}/reject:
+    put:
+      tags:
+        - "Service applications"
+      parameters:
+        - in: path
+          name: appliance_uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+  
+  /services/status:
     description: Query a verifiable service ExchangeRecord list. Containing data about agent to agent exchange of service
-    
     get:
       tags:
         - "Verifiable Services"
       summary: Query a list of verifiable service exchange records
       parameters:
-        - $ref: "#/components/parameters/ServiceExchangeRecordFilter"
+        - $ref: "#/components/parameters/StatusFilter"
                 
       responses:
         200:
@@ -31,6 +91,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServiceExchangeRecordResponse"
+                
   /vs/exchange/{record_id}:
     description: Query a verifiable service by ID
     
@@ -305,7 +366,7 @@ paths:
 
 components:
   parameters:
-    ServiceExchangeRecordFilter:
+    StatusFilter:
       in: query
       name: filter
       content:
@@ -313,18 +374,18 @@ components:
           schema:
             type: object
             properties:
-              label:
+              connection_uuid:
                 type: string
-              connection_id:
-                type: string
+                format: uuid
               author:
                 type: string
-              service_id:
+                enum: [self, other]
+              service_uuid:
                 type: string
-              exchange_id: 
-                type: string
+                format: uuid
               state: 
                 type: string
+                enum: [pending]
   schemas:
     PDSActivate:
       required:
@@ -338,12 +399,9 @@ components:
           enum: [own_your_data, local, thcf_data_vault]
     ServiceExchangeRecord:
       required:
-        - label
-        - service_id
+        - service_uuid
       properties:
-        exchange_id:
-          type: string
-        service_user_data_dri:
+        exchange_uuid:
           type: string
         author:
           type: string
@@ -351,16 +409,15 @@ components:
           type: string
         created_at:
           type: string
-        connection_id:
+        connection_uuid:
           type: string
         state:
           type: string
-        label:
-          type: string
-        service_id:
+        service_uuid:
           type: string
         service_user_data:
           type: string
+          description: JSON serialized service application data
         consent:
           $ref: "#/components/schemas/ConsentSerialized"
         service:
