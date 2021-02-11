@@ -18,19 +18,19 @@ paths:
     get:
       tags:
         - "Service applications that the user applied"
-      summary: Queries for all pending applications
+      summary: Queries for all pending applications that I have applied
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArrayOfApplications"
+                $ref: "#/components/schemas/ArrayOfMineApplications"
   /applications/others:
     get:
       tags:
         - "Service applications that others applied"
-      summary: Queries for all pending applications
+      summary: Queries for all pending applications that others applied
       responses:
         200:
           description: OK
@@ -74,45 +74,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Application"
-  
-  /services/status:
-    description: Query a verifiable service ExchangeRecord list. Containing data about agent to agent exchange of service
-    get:
-      tags:
-        - "Verifiable Services"
-      summary: Query a list of verifiable service exchange records
-      parameters:
-        - $ref: "#/components/parameters/StatusFilter"
                 
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ServiceExchangeRecordResponse"
                 
-  /vs/exchange/{record_id}:
-    description: Query a verifiable service by ID
-    
-    get:
-      tags:
-        - "Verifiable Services"
-      summary: Query a service exchange record by id
-      parameters:
-        - in: path
-          name: record_id
-          schema:
-            type: string
-          required: true
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ServiceExchangeRecord"
-  /vs/add:
+  /services/add:
     post:
       tags:
         - "Verifiable Services"
@@ -129,7 +93,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServiceExchangeRecord"
-  /vs/apply:
+  /services/apply:
     post:
       tags:
         - "Verifiable Services"
@@ -146,23 +110,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServiceExchangeRecord"
-  /vs/process-application:
-    post:
-      tags:
-        - "Verifiable Services"
-      summary: Decide whether to reject or accept an incoming service application
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ProcessApplication"
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ServiceExchangeRecord"
+
       
   /pds/settings:
     description: Set the configuration of multiple pds instances or one pds instance, if pds doesn't exists create pds instances
@@ -397,13 +345,17 @@ components:
         driver: 
           type: string
           enum: [own_your_data, local, thcf_data_vault]
-    ServiceExchangeRecord:
+    Application:
       required:
+        - appliance_uuid
+        - connection_uuid
+        - updated_at
+        - created_at
         - service_uuid
+        - consent
+        - service
       properties:
-        exchange_uuid:
-          type: string
-        author:
+        appliance_uuid:
           type: string
         updated_at:
           type: string
@@ -411,25 +363,30 @@ components:
           type: string
         connection_uuid:
           type: string
-        state:
-          type: string
         service_uuid:
           type: string
-        service_user_data:
-          type: string
-          description: JSON serialized service application data
         consent:
           $ref: "#/components/schemas/ConsentSerialized"
         service:
           $ref: "#/components/schemas/OCAData"
-    ServiceExchangeRecordResponse:
-      required:
-        - result
-      properties:
-        result:
-          type: array
-          items:
-            $ref: "#/components/schemas/ServiceExchangeRecord"
+    ArrayOfApplications:
+      type: array
+      items:
+        $ref: "#/components/schemas/Application"
+    MineApplication:
+      allOf:
+        - $ref: '#/components/schemas/Application'
+        - type: object
+          required:
+            - service_user_data
+          properties:
+            service_user_data:
+              type: string
+              description: JSON serialized service application data
+    ArrayOfMineApplications:
+        type: array
+        items:
+          $ref: "#/components/schemas/MineApplication"
     PDSSetting:
       required:
         - driver
