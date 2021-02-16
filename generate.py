@@ -12,13 +12,18 @@ import sys
 path_to_script = os.path.realpath(__file__)
 path = os.path.split(path_to_script) 
 path_to_spec = path[0] + "/swagger-spec.yaml"
-completed = subprocess.run(["swagger-marshmallow-codegen", path_to_spec], capture_output=True)
+
+process_arguments = ["swagger-marshmallow-codegen"]
+process_arguments.extend(sys.argv[2:])
+process_arguments.append(path_to_spec)
+
+
+completed = subprocess.run(process_arguments, capture_output=True)
 
 # Format
 generated_output = completed.stdout.decode("utf-8")
 std_error = completed.stderr.decode('utf-8')
 print(std_error)
-print(generated_output)
 
 index = generated_output.find("class")
 generated_output = generated_output[index:]

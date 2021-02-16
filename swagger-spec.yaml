@@ -17,8 +17,8 @@ paths:
   /applications/mine:
     get:
       tags:
-        - "Service applications that the user applied"
-      summary: Queries for all pending applications that I have applied
+        - "Service applications"
+      summary: Queries for all pending applications that I have applied to
       responses:
         200:
           description: OK
@@ -29,8 +29,8 @@ paths:
   /applications/others:
     get:
       tags:
-        - "Service applications that others applied"
-      summary: Queries for all pending applications that others applied
+        - "Service applications"
+      summary: Queries for all pending applications that others applied to
       responses:
         200:
           description: OK
@@ -89,10 +89,10 @@ paths:
       responses:
         200:
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ServiceExchangeRecord"
+          # content:
+          #   application/json:
+          #     schema:
+                # $ref: "#/components/schemas/ServiceExchangeRecord"
   /services/apply:
     post:
       tags:
@@ -106,10 +106,10 @@ paths:
       responses:
         200:
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ServiceExchangeRecord"
+          # content:
+          #   application/json:
+          #     schema:
+                # $ref: "#/components/schemas/ServiceExchangeRecord"
 
       
   /pds/settings:
@@ -211,7 +211,7 @@ paths:
       responses:
         200:
           description: OK
-  /vs/consent:
+  /services/consent:
     post:
       summary: Define a new consent
       tags:
@@ -243,7 +243,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Consent"
-  /vs/consent-given:
+  /services/consent-given:
     get:
       summary: Retrieve all consents givent to other agent's
       tags:
@@ -264,7 +264,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Consent"
-  /vs/request-service-list/{connection_id}:
+  /services/request-service-list/{connection_id}:
     get:
       summary: Request a service list from other agent
       tags:
@@ -282,7 +282,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RequestServiceList"
-  /vs/services:
+  /services/services:
     get:
       summary: Retrieve all defined services
       tags:
