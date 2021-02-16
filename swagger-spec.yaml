@@ -74,44 +74,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Application"
-                
-                
-  /services/add:
-    post:
-      tags:
-        - "Verifiable Services"
-      summary: Define a new service
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ServiceAdd"
-      responses:
-        200:
-          description: OK
-          # content:
-          #   application/json:
-          #     schema:
-                # $ref: "#/components/schemas/ServiceExchangeRecord"
-  /services/apply:
-    post:
-      tags:
-        - "Verifiable Services"
-      summary: Apply to other agent's service
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ServiceApply"
-      responses:
-        200:
-          description: OK
-          # content:
-          #   application/json:
-          #     schema:
-                # $ref: "#/components/schemas/ServiceExchangeRecord"
-
-      
   /pds/settings:
     description: Set the configuration of multiple pds instances or one pds instance, if pds doesn't exists create pds instances
     post:
@@ -282,7 +244,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RequestServiceList"
-  /services/services:
+  /services:
     get:
       summary: Retrieve all defined services
       tags:
@@ -304,11 +266,41 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Service"
+                $ref: "#/components/schemas/ArrayOfDefinedServices"
+  /services/add:
+    post:
+      tags:
+        - "Verifiable Services"
+      summary: Define a new service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewService"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DefinedService"
+  /services/apply:
+    post:
+      tags:
+        - "Verifiable Services"
+      summary: Apply to other agent's service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewApplication"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MineApplication"
                       
       
 
@@ -345,6 +337,17 @@ components:
         driver: 
           type: string
           enum: [own_your_data, local, thcf_data_vault]
+    NewApplication:
+      required:
+        - user_data
+        - service_uuid
+      properties:
+        user_data:
+          type: object
+          additionalProperties:
+            type: string
+        service_uuid:
+          type: string
     Application:
       required:
         - appliance_uuid
@@ -366,9 +369,9 @@ components:
         service_uuid:
           type: string
         consent:
-          $ref: "#/components/schemas/ConsentSerialized"
+          $ref: "#/components/schemas/OCASchemaDRIDataTuple"
         service:
-          $ref: "#/components/schemas/OCAData"
+          $ref: "#/components/schemas/OCASchema"
     ArrayOfApplications:
       type: array
       items:
@@ -468,110 +471,79 @@ components:
             type: object
             additionalProperties:
               type: string
-    ServiceAdd:
-      required:
-        - label
-        - service_schema
-        - consent_id
-      properties:
-        label:
-          type: string
-        service_schema:
-          $ref: "#/components/schemas/OCASchema"
-        consent_id:
-          type: string
-    ServiceApply:
-      required:
-        - user_data
-        - connection_id
-        - service_id
-      properties:
-        user_data:
-          type: string
-        connection_id:
-          type: string
-        service_id:
-          type: string
-    ConsentSerialized:
-      allOf:
-        - $ref: "#/components/schemas/OCADataSerialized"
-        - type: object
-          properties:
-            usage_policy:
-              type: string
     Consent:
       allOf:
-        - $ref: "#/components/schemas/OCAData"
+        - $ref: "#/components/schemas/OCASchemaDRIDataTuple"
         - type: object
           required:
             - label
-            - consent_id
+            - consent_uuid
           properties:
             label: 
               type: string
-            consent_id: 
+            consent_uuid: 
               type: string
-    ProcessApplication:
-      required:
-        - exchange_record_id
-        - decision
-      properties:
-        exchange_record_id:
-          type: string
-        decision:
-          type: string
+              nullable: true
+    ArrayOfDefinedServices:
+      type: array
+      items:
+        $ref: "#/components/schemas/DefinedService"
+    NewService:
+      allOf:
+        - $ref: "#/components/schemas/Service"
+        - type: object
+          required:
+            - consent_uuid
+          properties:
+            consent_uuid: 
+              type: string
+    DefinedService:
+      allOf:
+        - $ref: "#/components/schemas/Service"
+        - type: object
+          required:
+            - consent
+          properties:
+            consent:
+              $ref: "#/components/schemas/OCASchemaDRIDataTuple"
     Service:
       required:
-        - service_id
         - label
+        - service_schema_dri
+        - consent
       properties:
-        service_id:
-          type: string
         label:
           type: string
         updated_at:
           type: string
+          nullable: true
         created_at: 
           type: string
-        service_schema:
-          $ref: "#/components/schemas/OCASchema"
-        consent_schema:
-          $ref: "#/components/schemas/ConsentSerialized"
-        
+          nullable: true
+        service_schema_dri:
+          description: "OCA Schema DRI"
+          type: string
     RequestServiceList:
       required:
         - result
       properties:
         result:
           type: string
-    OCAData:
+    OCASchemaDRIDataTuple:
       allOf:
         - $ref: "#/components/schemas/OCASchema"
-        - type: object
-          required:
-            - oca_data_dri
-          properties:
-            oca_data_dri: 
-              type: string
-    OCADataSerialized:
-      allOf:
-        - $ref: "#/components/schemas/OCAData"
         - type: object
           required:
             - oca_data
           properties:
             oca_data: 
               type: object
-              properties:
-                test:
-                  type: string
+              additionalProperties:
+                type: string
     OCASchema:
       required:
-        - oca_schema_namespace
         - oca_schema_dri
       properties:
-        oca_schema_namespace:
-          type: string
         oca_schema_dri:
           type: string
     Payload:
