@@ -92,7 +92,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArrayOfPDSSettings"
+                $ref: "#/components/schemas/ArrayOfPDSDriverStatuses"
     get:
       tags:
           - "Personal Data Storage"
@@ -393,8 +393,6 @@ components:
     PDSSetting:
       required:
         - driver
-        - client_id
-        - client_secret
       properties:
         driver:
           type: object
@@ -415,22 +413,43 @@ components:
             own_your_data:
               type: object
               required:
-                - scope
                 - grant_type
               properties:
-                scope:
-                  type: string
-                  enum: [admin, write, read]
+                # scope:
+                #   type: string
+                #   enum: [admin, write, read]
                 grant_type:
                   type: string
                   enum: [client_credentials]
+            local:
+              type: object
+              properties:
+                test:
+                  type: string
         client_id: 
           type: string
         client_secret:
           type: string
         instance_name:
           type: string
-        
+    PDSDriverStatus:
+      required:
+        - connected
+        - driver
+        - instance_name
+      properties:
+        connected:
+          type: boolean
+        driver:
+          type: string
+        instance_name:
+          type: string
+        exception:
+          type: string
+    ArrayOfPDSDriverStatuses:
+      type: array
+      items:
+        $ref: "#/components/schemas/PDSDriverStatus"
     ArrayOfPDSSettings:
       type: array
       items:
