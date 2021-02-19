@@ -177,11 +177,11 @@ paths:
       responses:
         200:
           description: OK
-  /services/consent:
+  /consents:
     post:
       summary: Define a new consent
       tags:
-        - "Verifiable Services"
+        - "Consents"
       requestBody:
         content:
           application/json:
@@ -197,62 +197,50 @@ paths:
     get:
       summary: Retrieve all defined consents
       tags:
-        - "Verifiable Services"
+        - "Consents"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Consent"
-  /services/consent-given:
-    get:
-      summary: Retrieve all consents givent to other agent's
+                $ref: "#/components/schemas/ArrayOfConsents"
+  /consents/{consent_uuid}:
+    delete:
+      summary: Removes consent by its uuid
       tags:
-        - "Verifiable Services"
-      parameters:
-        - in: query
-          name: connection_id
-          schema: 
-            type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                properties:
-                  result:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Consent"
-  /services/request-service-list/{connection_id}:
-    get:
-      summary: Request a service list from other agent
-      tags:
-        - "Verifiable Services"
+        - "Consents"
       parameters:
         - in: path
-          name: connection_id
+          name: consent_uuid
           required: True
           schema: 
             type: string
       responses:
         200:
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RequestServiceList"
+        404:
+          description: Not found
+
+  /connections/{connection_uuid}/services:
+    get:
+      summary: Request a service list from other agent
+      tags:
+        - "Services"
+      parameters:
+        - in: path
+          name: connection_uuid
+          required: True
+          schema: 
+            type: string
+      responses:
+        200:
+          description: Response will come async, via websocket. Response will contain ArrayOfDefinedServices model.
   /services:
     get:
       summary: Retrieve all defined services
       tags:
-        - "Verifiable Services"
+        - "Services"
       parameters:
         - in: query
           name: connection_id
@@ -274,7 +262,7 @@ paths:
   /services/add:
     post:
       tags:
-        - "Verifiable Services"
+        - "Services"
       summary: Define a new service
       requestBody:
         content:
@@ -291,7 +279,7 @@ paths:
   /services/apply:
     post:
       tags:
-        - "Verifiable Services"
+        - "Services"
       summary: Apply to other agent's service
       requestBody:
         content:
@@ -305,8 +293,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MineApplication"
-                      
-      
+  /services/{service_uuid}:
+    delete:
+      summary: Removes service by its uuid
+      tags:
+        - "Services"
+      parameters:
+        - in: path
+          name: service_uuid
+          required: True
+          schema: 
+            type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not found
+                
+  # /documents/consents-given:
+  #   get:
+  #     summary: Retrieve all consents givent to other agent's
+  #     tags:
+  #       - "Documents"
+  #     responses:
+  #       200:
+  #         description: OK
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: "#/components/schemas/ArrayOfDocuments"
+ 
 
 components:
   parameters:
@@ -485,6 +501,10 @@ components:
             type: object
             additionalProperties:
               type: string
+    ArrayOfConsents:
+      type: array
+      items:
+        $ref: "#/components/schemas/Consent"
     Consent:
       allOf:
         - $ref: "#/components/schemas/OCASchemaDRIDataTuple"
@@ -511,6 +531,7 @@ components:
           properties:
             consent_uuid: 
               type: string
+              format: uuid
     DefinedService:
       allOf:
         - $ref: "#/components/schemas/Service"
@@ -525,7 +546,11 @@ components:
         - label
         - service_schema_dri
         - consent
+        - uuid
       properties:
+        uuid: 
+          type: string
+          format: uuid
         label:
           type: string
         updated_at:
@@ -536,12 +561,6 @@ components:
           nullable: true
         service_schema_dri:
           description: "OCA Schema DRI"
-          type: string
-    RequestServiceList:
-      required:
-        - result
-      properties:
-        result:
           type: string
     OCASchemaDRIDataTuple:
       allOf:
