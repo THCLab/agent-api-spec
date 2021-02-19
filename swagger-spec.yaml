@@ -75,8 +75,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Application"
   /pds/settings:
-    description: Set the configuration of multiple pds instances or one pds instance, if pds doesn't exists create pds instances
     post:
+      description: Set the configuration of pds instance. If pds doesn't exist create pds instance.
       tags:
         - "Personal Data Storage"
       summary: Set the configuration of pds instances and/or create pds instances
@@ -84,15 +84,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ArrayOfPDSSettings"
+              $ref: "#/components/schemas/PDSSetting"
                 
       responses:
-        200:
-          description: OK
+        408: 
+          description: PDS connection timeout
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArrayOfPDSDriverStatuses"
+                $ref: "#/components/schemas/Error"
+        200:
+          description: OK
     get:
       tags:
           - "Personal Data Storage"
@@ -118,6 +120,8 @@ paths:
       responses:
         200:
           description: OK
+        404:
+          description: Instance not found
   /pds/active:
     description: Gets currently active driver instance.
     get:
@@ -401,7 +405,7 @@ components:
           properties:
             name:
               type: string
-              enum: [own_your_data, thcf_data_vault, local]
+              enum: [own_your_data_data_vault, own_your_data_sem_con, thcf_data_vault, local]
             thcf_data_vault:
               type: object
               required:
@@ -410,14 +414,23 @@ components:
                 host:
                   type: string
                   description: Server URL
-            own_your_data:
+            own_your_data_data_vault:
               type: object
               required:
                 - grant_type
               properties:
-                # scope:
-                #   type: string
-                #   enum: [admin, write, read]
+                grant_type:
+                  type: string
+                  enum: [client_credentials]
+            own_your_data_sem_con:
+              type: object
+              required:
+                - grant_type
+                - scope
+              properties:
+                scope:
+                  type: string
+                  enum: [admin, write, read]
                 grant_type:
                   type: string
                   enum: [client_credentials]
@@ -432,32 +445,14 @@ components:
           type: string
         instance_name:
           type: string
-    PDSDriverStatus:
-      required:
-        - connected
-        - driver
-        - instance_name
-      properties:
-        connected:
-          type: boolean
-        driver:
-          type: string
-        instance_name:
-          type: string
-        exception:
-          type: string
-    ArrayOfPDSDriverStatuses:
-      type: array
-      items:
-        $ref: "#/components/schemas/PDSDriverStatus"
-    ArrayOfPDSSettings:
-      type: array
-      items:
-        $ref: "#/components/schemas/PDSSetting"
     ArrayOfPDSDrivers:
       type: array
       items:
         $ref: "#/components/schemas/PDSDriver"
+    ArrayOfPDSSettings:
+      type: array
+      items:
+        $ref: "#/components/schemas/PDSSetting"
     PDSDriver:
       type: "object"
       properties:
@@ -577,3 +572,14 @@ components:
       properties:
         dri:
           type: string
+    Error:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+        code:
+          type: "string"
+        payload:
+          type: "array"
+          items:
+            type: "string"
