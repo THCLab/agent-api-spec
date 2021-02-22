@@ -1,4 +1,5 @@
 generated_model.py
+generated_models.py
 test.py
 *.egg
 *.egg-info
