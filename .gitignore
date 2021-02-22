@@ -1,2 +1,6 @@
 generated_model.py
 test.py
+*.egg
+*.egg-info
+.vscode/
+__pycache__/

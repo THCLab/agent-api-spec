@@ -122,6 +122,7 @@ paths:
           description: OK
         404:
           description: Instance not found
+          
   /pds/active:
     description: Gets currently active driver instance.
     get:
@@ -356,7 +357,7 @@ components:
           type: string
         driver: 
           type: string
-          enum: [own_your_data, local, thcf_data_vault]
+          enum: [own_your_data_data_vault, own_your_data_sem_con, thcf_data_vault, local]
     NewApplication:
       required:
         - user_data
@@ -474,7 +475,7 @@ components:
       properties:
         name:
           type: string
-          enum: [own_your_data, thcf_data_vault, local]
+          enum: [own_your_data_data_vault, own_your_data_sem_con, thcf_data_vault, local]
         oca_schema_dri:
           type: string
     PDSDriverInstance:
