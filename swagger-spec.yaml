@@ -348,6 +348,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOfDocuments"
+  /documents/given-presentations:
+    get:
+      summary: Retrieve all presentations given to other agent's
+      tags:
+        - "Documents"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfDocuments"
+  /documents/mine-presentations:
+    get:
+      summary: Retrieve all presentations I have received
+      tags:
+        - "Documents"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfDocuments"
   /documents/given:
     get:
       summary: Retrieve all documents given to other agent's
@@ -372,6 +396,126 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOfDocuments"
+  /presentation-requests:
+    get:
+      summary: Retrieves all presentations requests that are addressed to me.
+      tags:
+        - "Presentations"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfPresentationRequests"
+      
+    post:
+      summary: Request my agent to send a presentation request to another agent
+      tags:
+        - "Presentations"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PresentationRequest"
+      responses:
+        200:
+          description: OK
+  /presentation-requests/{presentation_request_uuid}/matching-documents:
+    get:
+      summary: Retrieves all presentations requests that are addressed to me.
+      tags:
+        - "Presentations"
+      parameters:
+        - in: path
+          name: presentation_request_uuid
+          required: True
+          schema: 
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfCredentialDRI"
+  /presentation-requests/{presentation_request_uuid}/accept:
+    put:
+      summary: Accepts given presentation request
+      parameters:
+        - in: path
+          name: presentation_request_uuid
+          required: True
+          schema: 
+            type: string
+      tags:
+        - "Presentations"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                document_dri:
+                  type: string
+      responses:
+        200:
+          description: OK
+  /presentation-requests/{presentation_request_uuid}/reject:
+    put:
+      summary: Rejects given presentation request
+      tags:
+        - "Presentations"
+      parameters:
+        - in: path
+          name: presentation_request_uuid
+          required: True
+          schema: 
+            type: string
+      
+      responses:
+        200:
+          description: OK
+  /presentations:
+    get:
+      summary: Request my agent to send a presentation request to another agent
+      tags:
+        - "Presentations"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfPresentations"
+  /presentations/{presentation_uuid}/accept:
+    put:
+      summary: Accepts given presentation, which in return provides confirmation VC.
+      parameters:
+        - in: path
+          name: presentation_uuid
+          required: True
+          schema: 
+            type: string
+      tags:
+        - "Presentations"
+      responses:
+        200:
+          description: OK.
+  /presentations/{presentation_uuid}/reject:
+    put:
+      summary: Rejects given presentation, which in return provides confirmation VC.
+      tags:
+        - "Presentations"
+      parameters:
+        - in: path
+          name: presentation_uuid
+          required: True
+          schema: 
+            type: string
+      
+      responses:
+        200:
+          description: OK.
 components:
   parameters:
     StatusFilter:
@@ -395,6 +539,43 @@ components:
                 type: string
                 enum: [pending]
   schemas:
+    ArrayOfCredentialDRI:
+      type: array
+      items:
+        required:
+          - dri
+        properties:
+          dri:
+            type: string
+    ArrayOfPresentationRequests:
+      type: array
+      items:
+        $ref: "#/components/schemas/PresentationRequest"
+    ArrayOfPresentations:
+      type: array
+      items:
+        $ref: "#/components/schemas/Presentation"
+    Presentation:
+      properties:
+        presentation: 
+          type: object
+          additionalProperties:
+            type: string
+        connection_uuid:
+          type: string
+    PresentationRequest:
+      required:
+        - oca_schema_dri
+        - connection_uuid
+      properties:
+        uuid: 
+          type: string
+          format: uuid
+          nullable: true
+        oca_schema_dri: 
+          type: string
+        connection_uuid:
+          type: string
     PDSActivate:
       required:
         - instance_name
