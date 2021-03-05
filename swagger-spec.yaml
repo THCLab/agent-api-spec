@@ -245,12 +245,7 @@ paths:
       parameters:
         - in: query
           name: connection_id
-          description: leave blank if you want to see your services
-          schema: 
-            type: string
-        - in: query
-          name: service_id
-          description: query a single, specific record
+          description: \'mine\' to show my services
           schema: 
             type: string
       responses:
@@ -260,6 +255,39 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOfServices"
+  /services/{service_uuid}:
+    get:
+      summary: Retrieve service by id
+      tags:
+        - "Services"
+      parameters:
+        - in: path
+          name: service_uuid
+          required: True
+          schema: 
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfServices"
+    delete:
+      summary: Removes service by its uuid
+      tags:
+        - "Services"
+      parameters:
+        - in: path
+          name: service_uuid
+          required: True
+          schema: 
+            type: string
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not found
   /services/add:
     post:
       tags:
@@ -296,22 +324,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MineApplication"
-  /services/{service_uuid}:
-    delete:
-      summary: Removes service by its uuid
-      tags:
-        - "Services"
-      parameters:
-        - in: path
-          name: service_uuid
-          required: True
-          schema: 
-            type: string
-      responses:
-        200:
-          description: OK
-        404:
-          description: Not found
   /documents/given-consents:
     get:
       summary: Retrieve all consents given to other agent's
@@ -609,7 +621,6 @@ components:
       properties:
         consent_uuid: 
           type: string
-          format: uuid
         service_schema_dri:
           type: string
         label:
