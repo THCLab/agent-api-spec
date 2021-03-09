@@ -207,14 +207,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOfConsents"
-  /consents/{consent_uuid}:
+  /consents/{consent_dri}:
     delete:
       summary: Removes consent by its uuid
       tags:
         - "Consents"
       parameters:
         - in: path
-          name: consent_uuid
+          name: consent_dri
           required: True
           schema: 
             type: string
@@ -239,15 +239,9 @@ paths:
           description: Response will come async, via websocket. Response will contain ArrayOfServices model.
   /services:
     get:
-      summary: Retrieve all defined services
+      summary: Retrieve service by id
       tags:
         - "Services"
-      parameters:
-        - in: query
-          name: connection_id
-          description: \'mine\' to show my services
-          schema: 
-            type: string
       responses:
         200:
           description: OK
@@ -272,7 +266,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArrayOfServices"
+                $ref: "#/components/schemas/Service"
     delete:
       summary: Removes service by its uuid
       tags:
@@ -743,9 +737,8 @@ components:
           properties:
             label: 
               type: string
-            consent_uuid: 
+            dri: 
               type: string
-              nullable: true
     ArrayOfDocuments:
       type: array
       items:
@@ -796,11 +789,11 @@ components:
     BaseService:
       type: object
       required:
-        - consent_uuid
+        - consent_dri
         - service_schema_dri
         - label
       properties:
-        consent_uuid: 
+        consent_dri: 
           type: string
         service_schema_dri:
           type: string
