@@ -76,7 +76,6 @@ paths:
                 $ref: "#/components/schemas/Application"
   /pds/settings:
     post:
-      description: Set the configuration of pds instance. If pds doesn't exist create pds instance.
       tags:
         - "Personal Data Storage"
       summary: Set the configuration of pds instances and/or create pds instances
@@ -109,11 +108,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/ArrayOfPDSSettings"
   /pds/activate:
-    description: PDS Plugin is a state machine in which state is the PDS type. When you are saving something, you are saving to the active PDS.
     post:
       tags:
         - "Personal Data Storage"
-      summary: Choose a PDS for all the saving operations
+      summary: Choose a PDS as data source for all the operations
       requestBody:
         content:
           application/json:
@@ -125,8 +123,8 @@ paths:
         404:
           description: PDS instance not found
   /pds/active:
-    description: Gets currently active driver instance.
     get:
+      summary: Gets currently active driver instance.
       responses:
         200:
           description: Returns active driver instance.
@@ -135,7 +133,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/PDSDriverInstance"
   /pds/drivers:
-    description: Get all registered PDSes and current active PDS
     get:
       tags:
         - "Personal Data Storage"
@@ -148,7 +145,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ArrayOfPDSDrivers"
   /pds/oca-schema-chunks:
-    description: Retrieve data in bulk
     get:
       summary: Retrieve data in bulk
       tags:
