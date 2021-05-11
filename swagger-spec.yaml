@@ -8,12 +8,12 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-    
+
 servers:
 - url: http://localhost:8150/
   description: test
-  
-paths: 
+
+paths:
   /applications/mine:
     get:
       tags:
@@ -85,9 +85,9 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/PDSSetting"
-                
+
       responses:
-        408: 
+        408:
           description: PDS connection timeout
           content:
             application/json:
@@ -123,7 +123,7 @@ paths:
         200:
           description: OK
         404:
-          description: PDS instance not found       
+          description: PDS instance not found
   /pds/active:
     description: Gets currently active driver instance.
     get:
@@ -148,9 +148,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/ArrayOfPDSDrivers"
   /pds/oca-schema-chunks:
-    description: Retrieve data in bulk 
-    get: 
-      summary: Retrieve data in bulk 
+    description: Retrieve data in bulk
+    get:
+      summary: Retrieve data in bulk
       tags:
         - "Personal Data Storage"
       parameters:
@@ -216,7 +216,7 @@ paths:
         - in: path
           name: consent_dri
           required: True
-          schema: 
+          schema:
             type: string
       responses:
         200:
@@ -232,7 +232,7 @@ paths:
         - in: path
           name: connection_uuid
           required: True
-          schema: 
+          schema:
             type: string
       responses:
         200:
@@ -258,7 +258,7 @@ paths:
         - in: path
           name: service_uuid
           required: True
-          schema: 
+          schema:
             type: string
       responses:
         200:
@@ -275,7 +275,7 @@ paths:
         - in: path
           name: service_uuid
           required: True
-          schema: 
+          schema:
             type: string
       responses:
         200:
@@ -402,7 +402,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOfPresentationRequests"
-      
+
     post:
       summary: Request my agent to send a presentation request to another agent
       tags:
@@ -424,7 +424,7 @@ paths:
         - in: path
           name: presentation_request_uuid
           required: True
-          schema: 
+          schema:
             type: string
       responses:
         200:
@@ -440,7 +440,7 @@ paths:
         - in: path
           name: presentation_request_uuid
           required: True
-          schema: 
+          schema:
             type: string
       tags:
         - "Presentations"
@@ -463,9 +463,9 @@ paths:
         - in: path
           name: presentation_request_uuid
           required: True
-          schema: 
+          schema:
             type: string
-      
+
       responses:
         200:
           description: OK
@@ -488,7 +488,7 @@ paths:
         - in: path
           name: presentation_uuid
           required: True
-          schema: 
+          schema:
             type: string
       tags:
         - "Presentations"
@@ -504,9 +504,9 @@ paths:
         - in: path
           name: presentation_uuid
           required: True
-          schema: 
+          schema:
             type: string
-      
+
       responses:
         200:
           description: OK.
@@ -529,7 +529,7 @@ components:
               service_uuid:
                 type: string
                 format: uuid
-              state: 
+              state:
                 type: string
                 enum: [pending]
   schemas:
@@ -551,7 +551,7 @@ components:
         $ref: "#/components/schemas/Presentation"
     Presentation:
       properties:
-        presentation: 
+        presentation:
           type: object
           additionalProperties:
             type: string
@@ -562,11 +562,11 @@ components:
         - oca_schema_dri
         - connection_uuid
       properties:
-        uuid: 
+        uuid:
           type: string
           format: uuid
           nullable: true
-        oca_schema_dri: 
+        oca_schema_dri:
           type: string
         connection_uuid:
           type: string
@@ -577,7 +577,7 @@ components:
       properties:
         instance_name:
           type: string
-        driver: 
+        driver:
           type: string
           enum: [own_your_data_data_vault, own_your_data_sem_con, thcf_data_vault, local]
     NewApplication:
@@ -678,7 +678,7 @@ components:
               properties:
                 test:
                   type: string
-        client_id: 
+        client_id:
           type: string
         client_secret:
           type: string
@@ -703,7 +703,7 @@ components:
     PDSDriverInstance:
       type: "object"
       properties:
-        instance_name: 
+        instance_name:
           type: string
         driver:
           $ref: "#/components/schemas/PDSDriver"
@@ -712,7 +712,7 @@ components:
       items:
         $ref: "#/components/schemas/OCASchemaChunk"
     OCASchemaChunk:
-      required: 
+      required:
         - dri
         - payload
       properties:
@@ -735,9 +735,9 @@ components:
           required:
             - label
           properties:
-            label: 
+            label:
               type: string
-            dri: 
+            dri:
               type: string
     ArrayOfDocuments:
       type: array
@@ -748,9 +748,9 @@ components:
       properties:
         "@context":
           type: array
-          items: 
+          items:
             type: string
-        issuanceDate: 
+        issuanceDate:
           type: string
         issuer:
           type: string
@@ -793,7 +793,7 @@ components:
         - service_schema_dri
         - label
       properties:
-        consent_dri: 
+        consent_dri:
           type: string
         service_schema_dri:
           type: string
@@ -808,13 +808,13 @@ components:
             - service_schema_dri
             - service_uuid
           properties:
-            service_uuid: 
+            service_uuid:
               type: string
               format: uuid
             updated_at:
               type: string
               nullable: true
-            created_at: 
+            created_at:
               type: string
               nullable: true
             label:
@@ -829,7 +829,7 @@ components:
           required:
             - oca_data
           properties:
-            oca_data: 
+            oca_data:
               type: object
               additionalProperties:
                 type: string
