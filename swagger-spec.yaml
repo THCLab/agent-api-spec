@@ -553,6 +553,7 @@ components:
             type: string
         connection_uuid:
           type: string
+          format: uuid
     PresentationRequest:
       required:
         - oca_schema_dri
@@ -566,6 +567,7 @@ components:
           type: string
         connection_uuid:
           type: string
+          format: uuid
     PDSActivate:
       required:
         - instance_name
@@ -587,6 +589,7 @@ components:
             type: string
         service_uuid:
           type: string
+          format: uuid
     Application:
       required:
         - appliance_uuid
@@ -599,14 +602,19 @@ components:
       properties:
         appliance_uuid:
           type: string
+          format: uuid
         updated_at:
           type: string
+          format: date-time
         created_at:
           type: string
+          format: date-time
         connection_uuid:
           type: string
+          format: uuid
         service_uuid:
           type: string
+          format: uuid
         consent:
           $ref: "#/components/schemas/OCASchemaDRIDataTuple"
         service:
@@ -809,9 +817,11 @@ components:
               format: uuid
             updated_at:
               type: string
+              format: date-time
               nullable: true
             created_at:
               type: string
+              format: date-time
               nullable: true
             label:
               type: string
