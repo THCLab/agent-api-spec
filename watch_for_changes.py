@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
-import pathlib, time, subprocess, os
-# Settings
-send_generated_model_to_directory = "/home/sevni/Documents/thclab/aries/aries-cloudagent-python/aries_cloudagent/"
+import pathlib, time, subprocess, os, sys
+if len(sys.argv) < 2:
+    print("Provide path as an argument to the script")
+    print("Script will be generated in that place")
+    print("Example:")
+    print("python generate.py /home/asd/")
+    exit(0)
+send_generated_model_to_directory = sys.argv[1]
 
 # Script
 path_to_script = os.path.realpath(__file__)
@@ -13,7 +18,6 @@ file = pathlib.Path(path_to_spec)
 generate_script = pathlib.Path(path_to_generate_script)
 last_mod_time = file.stat().st_mtime
 last_mod_time_generate = generate_script.stat().st_mtime
-print(last_mod_time)
 while 1:
     time.sleep(1)
     mod_time = file.stat().st_mtime

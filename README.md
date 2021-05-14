@@ -1,6 +1,21 @@
 # agent-api-spec
 Agent OpenAPI spec
 
+## Requirements
+
+Install requirements.txt
+
+```
+pip install -r requirements.txt
+```
+
+Install the codegen driver
+
+```
+cd codegen_driver
+pip install .
+```
+
 ## How to generate models 
 
 This command will generate models to current folder:
@@ -16,6 +31,6 @@ You can pass the output folder to the script (Make sure to put '/' at the end)
 
 ## Filewatcher
 
-This script watches both the spec and generate script for changes. Calls generate.py on changes.
-Path to the output folder is specified using a variable in the script. You need to edit
-the script to change it.
+```
+python watch_for_changes /home/guy/
+```

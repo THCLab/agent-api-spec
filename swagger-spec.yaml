@@ -595,8 +595,6 @@ components:
       required:
         - appliance_uuid
         - connection_uuid
-        - updated_at
-        - created_at
         - service_uuid
         - consent
         - service
@@ -627,8 +625,10 @@ components:
             - service_user_data
           properties:
             service_user_data:
-              type: string
+              type: object
               description: JSON serialized service application data
+              additionalProperties:
+                type: string
     ArrayOfMineApplications:
         type: array
         items:
