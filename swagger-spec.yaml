@@ -38,16 +38,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOfApplications"
-  /applications/{appliance_uuid}/accept:
+  /applications/{appliance_id}/accept:
     put:
       tags:
         - "Service applications"
       parameters:
         - in: path
-          name: appliance_uuid
+          name: appliance_id
           schema:
             type: string
-            format: uuid
           required: true
       responses:
         200:
@@ -56,16 +55,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Application"
-  /applications/{appliance_uuid}/reject:
+  /applications/{appliance_id}/reject:
     put:
       tags:
         - "Service applications"
       parameters:
         - in: path
-          name: appliance_uuid
+          name: appliance_id
           schema:
             type: string
-            format: uuid
           required: true
       responses:
         200:
@@ -219,14 +217,14 @@ paths:
           description: OK
         404:
           description: Not found
-  /connections/{connection_uuid}/services:
+  /connections/{connection_id}/services:
     get:
       summary: Request a service list from other agent
       tags:
         - "Services"
       parameters:
         - in: path
-          name: connection_uuid
+          name: connection_id
           required: True
           schema:
             type: string
@@ -245,14 +243,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOfServices"
-  /services/{service_uuid}:
+  /services/{service_id}:
     get:
       summary: Retrieve service by id
       tags:
         - "Services"
       parameters:
         - in: path
-          name: service_uuid
+          name: service_id
           required: True
           schema:
             type: string
@@ -269,7 +267,7 @@ paths:
         - "Services"
       parameters:
         - in: path
-          name: service_uuid
+          name: service_id
           required: True
           schema:
             type: string
@@ -411,14 +409,14 @@ paths:
       responses:
         200:
           description: OK
-  /presentation-requests/{presentation_request_uuid}/matching-documents:
+  /presentation-requests/{presentation_request_id}/matching-documents:
     get:
       summary: Retrieves all presentations requests that are addressed to me.
       tags:
         - "Presentations"
       parameters:
         - in: path
-          name: presentation_request_uuid
+          name: presentation_request_id
           required: True
           schema:
             type: string
@@ -429,12 +427,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOfCredentialDRI"
-  /presentation-requests/{presentation_request_uuid}/accept:
+  /presentation-requests/{presentation_request_id}/accept:
     put:
       summary: Accepts given presentation request
       parameters:
         - in: path
-          name: presentation_request_uuid
+          name: presentation_request_id
           required: True
           schema:
             type: string
@@ -450,14 +448,14 @@ paths:
       responses:
         200:
           description: OK
-  /presentation-requests/{presentation_request_uuid}/reject:
+  /presentation-requests/{presentation_request_id}/reject:
     put:
       summary: Rejects given presentation request
       tags:
         - "Presentations"
       parameters:
         - in: path
-          name: presentation_request_uuid
+          name: presentation_request_id
           required: True
           schema:
             type: string
@@ -477,12 +475,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOfPresentations"
-  /presentations/{presentation_uuid}/accept:
+  /presentations/{presentation_id}/accept:
     put:
       summary: Accepts given presentation, which in return provides confirmation VC.
       parameters:
         - in: path
-          name: presentation_uuid
+          name: presentation_id
           required: True
           schema:
             type: string
@@ -491,14 +489,14 @@ paths:
       responses:
         200:
           description: OK.
-  /presentations/{presentation_uuid}/reject:
+  /presentations/{presentation_id}/reject:
     put:
       summary: Rejects given presentation, which in return provides confirmation VC.
       tags:
         - "Presentations"
       parameters:
         - in: path
-          name: presentation_uuid
+          name: presentation_id
           required: True
           schema:
             type: string
@@ -516,13 +514,13 @@ components:
           schema:
             type: object
             properties:
-              connection_uuid:
+              connection_id:
                 type: string
                 format: uuid
               author:
                 type: string
                 enum: [self, other]
-              service_uuid:
+              service_id:
                 type: string
                 format: uuid
               state:
@@ -551,13 +549,13 @@ components:
           type: object
           additionalProperties:
             type: string
-        connection_uuid:
+        connection_id:
           type: string
           format: uuid
     PresentationRequest:
       required:
         - oca_schema_dri
-        - connection_uuid
+        - connection_id
       properties:
         uuid:
           type: string
@@ -565,7 +563,7 @@ components:
           nullable: true
         oca_schema_dri:
           type: string
-        connection_uuid:
+        connection_id:
           type: string
           format: uuid
     PDSActivate:
@@ -581,36 +579,38 @@ components:
     NewApplication:
       required:
         - user_data
-        - service_uuid
+        - service_id
+        - connection_id
       properties:
+        connection_id:
+          type: string
         user_data:
           type: object
           additionalProperties:
             type: string
-        service_uuid:
+        service_id:
           type: string
           format: uuid
     Application:
       required:
-        - appliance_uuid
-        - connection_uuid
-        - service_uuid
+        - appliance_id
+        - connection_id
+        - service_id
         - consent
         - service
       properties:
-        appliance_uuid:
+        appliance_id:
           type: string
-          format: uuid
         updated_at:
           type: string
           format: date-time
         created_at:
           type: string
           format: date-time
-        connection_uuid:
+        connection_id:
           type: string
           format: uuid
-        service_uuid:
+        service_id:
           type: string
           format: uuid
         consent:
@@ -810,9 +810,9 @@ components:
           required:
             - label
             - service_schema_dri
-            - service_uuid
+            - service_id
           properties:
-            service_uuid:
+            service_id:
               type: string
               format: uuid
             updated_at:
@@ -837,8 +837,8 @@ components:
           properties:
             oca_data:
               type: object
-              additionalProperties:
-                type: string
+              # additionalProperties:
+              #   type: string
     OCASchema:
       required:
         - oca_schema_dri
