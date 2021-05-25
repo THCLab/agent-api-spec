@@ -652,9 +652,9 @@ components:
             thcf_data_vault:
               type: object
               required:
-                - host
+                - api_url
               properties:
-                host:
+                api_url:
                   type: string
                   description: Server URL
             own_your_data_data_vault:
