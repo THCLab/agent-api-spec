@@ -120,6 +120,8 @@ paths:
           description: OK
         404:
           description: PDS instance not found
+        422:
+          description: Invalid request
   /pds/active:
     get:
       summary: Gets currently active driver instance.
@@ -726,8 +728,6 @@ components:
           type: array
           items:
             type: object
-            additionalProperties:
-              type: string
     ArrayOfConsents:
       type: array
       items:
